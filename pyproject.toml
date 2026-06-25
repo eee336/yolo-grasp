@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yolo-grasp"
+version = "0.1.0"
+description = "Pure Python YOLO + RealSense + UR5e + DexH13 bottle grasping pipeline."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy>=1.23",
+  "opencv-python>=4.8",
+  "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+vision = [
+  "ultralytics>=8.3",
+]
+realsense = [
+  "pyrealsense2>=2.55",
+]
+ur = [
+  "ur-rtde>=1.6",
+]
+dexh13 = [
+  "pyserial>=3.5",
+  "pymodbus>=3.6",
+]
+speech = [
+  "SpeechRecognition>=3.10",
+]
+all = [
+  "ultralytics>=8.3",
+  "pyrealsense2>=2.55",
+  "ur-rtde>=1.6",
+  "pyserial>=3.5",
+  "pymodbus>=3.6",
+  "SpeechRecognition>=3.10",
+]
+
+[project.scripts]
+yolo-grasp = "yolo_grasp.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["yolo_grasp*"]

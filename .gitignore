@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.Python
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+outputs/
+models/*.pt
+models/*.onnx
+data/
+configs/hardware.local.yaml

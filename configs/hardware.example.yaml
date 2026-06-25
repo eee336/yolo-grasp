@@ -1,0 +1,113 @@
+# Copy this file to configs/hardware.local.yaml and edit it for your lab.
+# Run with:
+#   python scripts/run_grasp.py -c configs/default.yaml -c configs/hardware.local.yaml --plan-only
+
+camera:
+  type: realsense
+  realsense:
+    serial: ""          # optional; fill when multiple RealSense devices are connected
+    width: 640
+    height: 480
+    fps: 30
+    align_depth_to_color: true
+    warmup_frames: 30
+    timeout_ms: 5000
+    filters:
+      decimation: false
+      spatial: true
+      temporal: true
+      hole_filling: true
+
+detector:
+  type: yolo
+  yolo:
+    weights: models/bottle_yolo_seg.pt
+    imgsz: 640
+    conf: 0.45
+    iou: 0.50
+    max_detections: 5
+    device: auto
+    allowed_classes:
+      - mineral_water_bottle
+      - reagent_bottle
+      - bottle
+    class_aliases:
+      bottle: mineral_water_bottle
+
+localization:
+  # Replace with your calibrated RealSense optical-frame-to-UR-base transform.
+  transform_camera_to_base:
+    - [1.0, 0.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+
+grasp:
+  table_height_m: 0.0
+  tcp_orientation_rvec: [3.14159, 0.0, 0.0]
+
+safety:
+  workspace_limits_m:
+    - [0.18, 0.75]
+    - [-0.45, 0.45]
+    - [0.03, 0.60]
+  min_grasp_z_m: 0.04
+
+robot:
+  type: ur_rtde
+  ur5e:
+    host: 192.168.1.10
+    enable_motion: false
+    speed_m_s: 0.08
+    accel_m_s2: 0.12
+    tcp_offset: [0.0, 0.0, 0.18, 0.0, 0.0, 0.0]
+    payload_mass_kg: 1.2
+    payload_cog_m: [0.0, 0.0, 0.08]
+
+hand:
+  type: dexh13
+  dexh13:
+    # Keep this as mock until you have filled one real transport block below.
+    transport: mock
+    enable_motion: false
+    open_profile: open
+
+    # Option A: vendor SDK wrapper. Fill module/class/methods according to the SDK you receive.
+    sdk:
+      module: dexh13_sdk
+      class: DexH13
+      init_kwargs: {}
+      methods:
+        connect: connect
+        disconnect: close
+        stop: stop
+        set_positions: set_positions
+        set_speed: set_speed
+        set_force: set_force
+
+    # Option B: serial bridge that accepts one JSON command per line.
+    serial_json:
+      port: /dev/ttyUSB0
+      baudrate: 115200
+      timeout_s: 1.0
+
+    # Option C: Modbus TCP. You must fill register addresses from the DexH13 manual.
+    modbus_tcp:
+      host: 192.168.1.20
+      port: 502
+      unit_id: 1
+      timeout_s: 1.0
+      position_scale: 1000.0
+      speed_scale: 1000.0
+      force_scale: 1000.0
+      execute_value: 1
+      stop_value: 0
+      registers:
+        position_start: 0
+        speed_start: 100
+        force_start: 120
+        command: 200
+
+runtime:
+  execute_motion: false
+

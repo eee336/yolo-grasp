@@ -1,0 +1,11 @@
+numpy>=1.23
+opencv-python>=4.8
+PyYAML>=6.0
+
+# Optional runtime dependencies:
+# ultralytics>=8.3        # YOLO detection / segmentation
+# pyrealsense2>=2.55      # Intel RealSense camera
+# ur-rtde>=1.6            # UR5e RTDE control
+# pyserial>=3.5           # DexH13 serial adapter
+# pymodbus>=3.6           # DexH13 Modbus adapter
+# SpeechRecognition>=3.10 # Optional microphone ASR front-end

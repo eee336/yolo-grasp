@@ -1,0 +1,215 @@
+runtime:
+  log_level: INFO
+  execute_motion: false
+  save_debug_image: true
+  output_dir: outputs
+
+language:
+  enabled: true
+  require_known_target: true
+  default_target_class:
+  aliases:
+    mineral_water_bottle:
+      - 矿泉水瓶
+      - 水瓶
+      - 塑料瓶
+      - 饮料瓶
+      - 透明瓶
+      - 农夫山泉
+      - 怡宝
+      - bottle
+    reagent_bottle:
+      - 化学试剂瓶
+      - 试剂瓶
+      - 玻璃瓶
+      - 棕色瓶
+      - 药瓶
+      - 试剂玻璃瓶
+  spatial_keywords:
+    left:
+      - 左边
+      - 左侧
+      - 最左
+      - 左面的
+    right:
+      - 右边
+      - 右侧
+      - 最右
+      - 右面的
+    top:
+      - 上边
+      - 上方
+      - 最上
+      - 远端
+    bottom:
+      - 下边
+      - 下方
+      - 最下
+      - 近端
+    nearest:
+      - 最近
+      - 离我最近
+      - 靠近相机
+      - 前面的
+    farthest:
+      - 最远
+      - 离我最远
+      - 远处
+    front:
+      - 靠近机器人
+      - 机器人前面
+    back:
+      - 远离机器人
+      - 机器人后面
+    center:
+      - 中间
+      - 中央
+      - 正中间
+  speech:
+    language: zh-CN
+    timeout_s: 5.0
+    phrase_time_limit_s: 6.0
+
+camera:
+  type: mock
+  mock:
+    width: 640
+    height: 480
+    fx: 615.0
+    fy: 615.0
+    ppx: 320.0
+    ppy: 240.0
+    background_depth_m: 1.20
+    object_depth_m: 0.62
+    bbox_xyxy: [270, 150, 370, 390]
+    class_name: mineral_water_bottle
+
+detector:
+  type: mock
+  mock:
+    class_name: mineral_water_bottle
+    confidence: 0.99
+    bbox_xyxy: [270, 150, 370, 390]
+  yolo:
+    weights: models/bottle_yolo_seg.pt
+    imgsz: 640
+    conf: 0.45
+    iou: 0.50
+    max_detections: 5
+    device: auto
+    allowed_classes:
+      - mineral_water_bottle
+      - reagent_bottle
+      - bottle
+    class_aliases:
+      bottle: mineral_water_bottle
+
+localization:
+  depth_min_m: 0.15
+  depth_max_m: 1.50
+  mask_erode_px: 3
+  point_stride: 2
+  min_points: 80
+  outlier_percentiles: [3.0, 97.0]
+  # Eye-to-hand transform: point_base = transform_camera_to_base @ point_camera.
+  # Default is only for mock data. Replace it after calibration.
+  transform_camera_to_base:
+    - [0.0, 0.0, 1.0, -0.20]
+    - [-1.0, 0.0, 0.0, 0.00]
+    - [0.0, -1.0, 0.0, 0.50]
+    - [0.0, 0.0, 0.0, 1.00]
+
+grasp:
+  mode: top_down
+  table_height_m: 0.0
+  approach_offset_m: 0.12
+  lift_offset_m: 0.16
+  tcp_orientation_rvec: [3.14159, 0.0, 0.0]
+  default_hand_profile: bottle_cylindrical
+  per_class:
+    mineral_water_bottle:
+      hand_profile: bottle_cylindrical
+      grasp_height_above_table_m: 0.105
+      tcp_z_offset_m: 0.0
+      xy_offset_m: [0.0, 0.0]
+      max_dimensions_m: [0.14, 0.14, 0.32]
+      use_table_height: true
+    reagent_bottle:
+      hand_profile: reagent_gentle
+      grasp_height_above_table_m: 0.080
+      tcp_z_offset_m: 0.0
+      xy_offset_m: [0.0, 0.0]
+      max_dimensions_m: [0.12, 0.12, 0.22]
+      use_table_height: true
+    bottle:
+      hand_profile: bottle_cylindrical
+      grasp_height_above_table_m: 0.095
+      tcp_z_offset_m: 0.0
+      xy_offset_m: [0.0, 0.0]
+      use_table_height: true
+
+safety:
+  enabled: true
+  workspace_limits_m:
+    - [0.18, 0.75]
+    - [-0.45, 0.45]
+    - [0.03, 0.60]
+  min_grasp_z_m: 0.04
+
+robot:
+  type: mock
+  mock:
+    initial_pose: [0.40, 0.0, 0.35, 3.14159, 0.0, 0.0]
+    latency_s: 0.05
+  ur5e:
+    host: 192.168.1.10
+    enable_motion: false
+    speed_m_s: 0.12
+    accel_m_s2: 0.20
+    stop_accel_m_s2: 0.50
+    tcp_offset: [0.0, 0.0, 0.18, 0.0, 0.0, 0.0]
+    payload_mass_kg: 1.2
+    payload_cog_m: [0.0, 0.0, 0.08]
+
+hand:
+  type: mock
+  profiles:
+    open:
+      positions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      speed: 0.35
+      force: 0.15
+      settle_s: 0.4
+    bottle_cylindrical:
+      positions: [0.60, 0.62, 0.62, 0.58, 0.58, 0.55, 0.52, 0.52, 0.50, 0.42, 0.42, 0.35, 0.30]
+      speed: 0.28
+      force: 0.35
+      settle_s: 1.0
+    reagent_gentle:
+      positions: [0.48, 0.50, 0.50, 0.46, 0.46, 0.43, 0.40, 0.40, 0.38, 0.32, 0.32, 0.28, 0.24]
+      speed: 0.18
+      force: 0.22
+      settle_s: 1.0
+  mock:
+    open_profile: open
+    latency_s: 0.05
+  dexh13:
+    transport: mock
+    enable_motion: false
+    open_profile: open
+    default_settle_s: 0.8
+    profiles:
+      open:
+        positions: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        speed: 0.35
+        force: 0.15
+        settle_s: 0.4
+      bottle_cylindrical:
+        positions: [0.60, 0.62, 0.62, 0.58, 0.58, 0.55, 0.52, 0.52, 0.50, 0.42, 0.42, 0.35, 0.30]
+        speed: 0.28
+        force: 0.35
+        settle_s: 1.0
+      reagent_gentle:
+        positions: [0.48, 0.50, 0.50, 0.46, 0.46, 0.43, 0.40, 0.40, 0.38, 0.32, 0.32, 0.28, 0.24]
+        speed: 0.18
+        force: 0.22
+        settle_s: 1.0
