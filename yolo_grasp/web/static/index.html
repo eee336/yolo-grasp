@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YOLO Grasp Console</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="video-area" aria-label="camera">
+        <header class="topbar">
+          <div>
+            <h1>YOLO Grasp Console</h1>
+            <p id="runtimeLine">camera: -- · detector: -- · grasp: --</p>
+          </div>
+          <div id="statusPill" class="status-pill idle">connecting</div>
+        </header>
+        <div class="stream-frame">
+          <img id="cameraStream" src="/video.mjpg" alt="camera stream" />
+        </div>
+      </section>
+
+      <aside class="control-area" aria-label="controls">
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Target</h2>
+            <button id="refreshButton" class="icon-button" type="button" title="Refresh">↻</button>
+          </div>
+          <label for="targetClass">Class</label>
+          <select id="targetClass"></select>
+
+          <label for="spatialHint">Position</label>
+          <select id="spatialHint">
+            <option value="">auto</option>
+            <option value="left">left</option>
+            <option value="right">right</option>
+            <option value="center">center</option>
+            <option value="nearest">nearest</option>
+            <option value="farthest">farthest</option>
+            <option value="front">front</option>
+            <option value="back">back</option>
+          </select>
+
+          <label for="commandText">Command</label>
+          <input id="commandText" type="text" value="把矿泉水瓶抓起来" autocomplete="off" />
+
+          <div class="actions">
+            <button id="planButton" class="primary" type="button">Plan</button>
+            <button id="executeButton" class="danger" type="button">Execute</button>
+          </div>
+          <label class="confirm-row">
+            <input id="confirmMotion" type="checkbox" />
+            <span>confirm hardware motion</span>
+          </label>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Scene</h2>
+            <span id="objectCount" class="counter">0</span>
+          </div>
+          <div id="objectList" class="object-list"></div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-title">
+            <h2>Plan</h2>
+            <span id="planState" class="counter">idle</span>
+          </div>
+          <pre id="planOutput">{}</pre>
+        </section>
+      </aside>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+

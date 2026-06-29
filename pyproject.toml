@@ -34,6 +34,10 @@ speech = [
 graspnet = [
   "graspnetAPI @ git+https://github.com/graspnet/graspnetAPI.git",
 ]
+web = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
+]
 all = [
   "ultralytics>=8.3",
   "pyrealsense2>=2.55",
@@ -42,10 +46,13 @@ all = [
   "pymodbus>=3.6",
   "SpeechRecognition>=3.10",
   "graspnetAPI @ git+https://github.com/graspnet/graspnetAPI.git",
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
 ]
 
 [project.scripts]
 yolo-grasp = "yolo_grasp.cli:main"
+yolo-grasp-web = "yolo_grasp.web.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["yolo_grasp*"]

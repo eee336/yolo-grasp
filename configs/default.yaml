@@ -3,6 +3,7 @@ runtime:
   execute_motion: false
   save_debug_image: true
   output_dir: outputs
+  web_frame_interval_s: 0.25
 
 language:
   enabled: true

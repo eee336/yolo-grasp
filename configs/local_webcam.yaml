@@ -1,0 +1,32 @@
+# Local webcam UI test config.
+# This uses cv2.VideoCapture and a constant fake depth image.
+# It is useful for testing the browser page with the computer's camera.
+# Do not use this configuration for real robot grasp execution.
+
+camera:
+  type: opencv
+  opencv:
+    device_index: 0
+    width: 640
+    height: 480
+    fps: 30
+    constant_depth_m: 0.65
+    flip_horizontal: false
+    fx: 615.0
+    fy: 615.0
+    ppx: 320.0
+    ppy: 240.0
+
+detector:
+  # Keep mock detector for local UI testing unless you have YOLO weights.
+  # The fixed bbox lets the full planning pipeline run on a regular webcam.
+  type: mock
+  mock:
+    class_name: mineral_water_bottle
+    confidence: 0.99
+    bbox_xyxy: [270, 150, 370, 390]
+
+runtime:
+  execute_motion: false
+  web_frame_interval_s: 0.12
+

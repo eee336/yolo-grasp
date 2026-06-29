@@ -14,6 +14,7 @@ yolo_grasp/
   planning/     桌面瓶类抓取规划、可选 GraspNet 适配
   robot/        UR5e RTDE 与 mock 机械臂
   hand/         DexH13 SDK/Modbus/串口 JSON/mock 适配
+  web/          浏览器控制台
   pipeline.py   完整抓取状态机
 configs/
   default.yaml            默认 mock 配置
@@ -50,6 +51,12 @@ pip install -e .
 
 ```bash
 pip install -e ".[vision,realsense,ur,dexh13]"
+```
+
+Web 控制台需要：
+
+```bash
+pip install -e ".[web]"
 ```
 
 如需读取 GraspNet API 的 `.npy GraspGroup` 输出，可以额外安装：
@@ -116,6 +123,44 @@ python scripts/parse_command.py "把右边的试剂瓶抓起来"
 pip install -e ".[speech]"
 python scripts/run_grasp.py -c configs/default.yaml --listen --plan-only
 ```
+
+## 启动前端页面
+
+mock 模式：
+
+```bash
+python scripts/run_web.py -c configs/default.yaml --host 127.0.0.1 --port 8080
+```
+
+本地普通摄像头测试：
+
+```bash
+python scripts/run_web.py \
+  -c configs/default.yaml \
+  -c configs/local_webcam.yaml \
+  --host 127.0.0.1 \
+  --port 8080
+```
+
+`configs/local_webcam.yaml` 使用电脑/USB 摄像头和测试用常量深度，只适合前端联调，不适合真实抓取。
+
+然后打开：
+
+```text
+http://127.0.0.1:8080
+```
+
+真实硬件模式：
+
+```bash
+python scripts/run_web.py \
+  -c configs/default.yaml \
+  -c configs/hardware.local.yaml \
+  --host 0.0.0.0 \
+  --port 8080
+```
+
+页面可以查看相机画面、检测列表、选择目标类别、输入中文命令，并触发 `Plan` 或 `Execute`。详细说明见 [docs/WEB_UI.md](docs/WEB_UI.md)。
 
 ## 准备 YOLO 模型
 

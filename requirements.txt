@@ -11,3 +11,5 @@ PyYAML>=6.0
 # SpeechRecognition>=3.10 # Optional microphone ASR front-end
 # graspnetAPI @ git+https://github.com/graspnet/graspnetAPI.git
 #                         # Optional only for reading GraspNet .npy GraspGroup outputs
+# fastapi>=0.110          # Optional web control console
+# uvicorn[standard]>=0.27 # Optional web control console

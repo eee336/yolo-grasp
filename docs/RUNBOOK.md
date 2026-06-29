@@ -17,9 +17,11 @@ pip install -e ".[vision,realsense,ur,dexh13]"
 python scripts/run_grasp.py -c configs/default.yaml --plan-only
 python scripts/run_grasp.py -c configs/default.yaml --execute
 python scripts/run_grasp.py -c configs/default.yaml --plan-only --command "把矿泉水瓶抓起来"
+python scripts/run_web.py -c configs/default.yaml --host 127.0.0.1 --port 8080
 ```
 
 检查 `outputs/debug_*.jpg` 和 `outputs/plan_*.json` 是否生成。
+Web 页面打开 `http://127.0.0.1:8080`，应能看到合成相机画面和目标列表。
 
 单独检查中文命令是否能映射到正确类别：
 
@@ -232,6 +234,18 @@ python scripts/run_grasp.py \
 - `plan_*.json` 里的 `target_center_base_m` 是否落在真实桌面位置附近。
 - `grasp_pose_base` 是否在 UR5e 可达工作区内。
 - z 值是否高于桌面，并且不会撞桌。
+
+也可以启动 Web 控制台：
+
+```bash
+python scripts/run_web.py \
+  -c configs/default.yaml \
+  -c configs/hardware.local.yaml \
+  --host 0.0.0.0 \
+  --port 8080
+```
+
+浏览器访问 `http://机器人控制电脑IP:8080`。
 
 ## 8. 测试 UR5e 连接
 

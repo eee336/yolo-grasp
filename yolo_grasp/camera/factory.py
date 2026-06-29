@@ -5,6 +5,7 @@ from typing import Mapping
 from yolo_grasp.camera.base import CameraBackend
 from yolo_grasp.camera.image_folder_camera import ImageFolderCamera
 from yolo_grasp.camera.mock_camera import MockCamera
+from yolo_grasp.camera.opencv_camera import OpenCVCamera
 from yolo_grasp.camera.realsense_camera import RealSenseCamera
 
 
@@ -16,5 +17,6 @@ def create_camera(config: Mapping) -> CameraBackend:
         return RealSenseCamera(config.get("realsense", {}))
     if camera_type in {"image", "image_folder", "file"}:
         return ImageFolderCamera(config.get("image_folder", {}))
+    if camera_type in {"opencv", "webcam", "local"}:
+        return OpenCVCamera(config.get("opencv", config.get("webcam", {})))
     raise ValueError(f"Unsupported camera.type: {camera_type}")
-

@@ -18,6 +18,7 @@ runtime:
 - `execute_motion`: 是否执行机械臂和灵巧手动作。真实硬件还需要各自的 `enable_motion=true`。
 - `save_debug_image`: 是否保存 debug 图和 plan JSON。
 - `output_dir`: 输出目录。
+- `web_frame_interval_s`: Web 控制台 MJPEG 刷新间隔。
 
 ## language
 
@@ -84,8 +85,21 @@ camera:
 - `type=mock`: 使用合成 RGB-D 图。
 - `type=realsense`: 使用 `pyrealsense2`。
 - `type=image_folder`: 从图片和深度文件回放。
+- `type=opencv`: 使用本地普通摄像头，生成测试用常量深度图。
 
 RealSense 输出的深度会被转换为米，且默认把深度对齐到彩色图。
+
+本地普通摄像头只适合前端联调：
+
+```yaml
+camera:
+  type: opencv
+  opencv:
+    device_index: 0
+    width: 640
+    height: 480
+    constant_depth_m: 0.65
+```
 
 ## detector
 
