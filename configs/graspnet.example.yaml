@@ -1,0 +1,51 @@
+# Optional GraspNet/AnyGrasp planner backend.
+#
+# Use with:
+#   python scripts/validate_graspnet_adapter.py \
+#     -c configs/default.yaml \
+#     -c configs/hardware.local.yaml \
+#     -c configs/graspnet.example.yaml \
+#     --command "把矿泉水瓶抓起来"
+#
+# The external command must read {input_npz} and write {output_json}.
+# See docs/GRASPNET.md for the exact protocol.
+
+grasp:
+  mode: graspnet
+  graspnet:
+    backend: command
+    fallback_to_top_down: true
+    request_dir: outputs/graspnet_requests
+    keep_io: true
+    timeout_s: 120
+
+    # Replace this with your GraspNet-baseline or AnyGrasp inference bridge.
+    command:
+      - python
+      - external/graspnet_bridge/run_inference.py
+      - --input
+      - "{input_npz}"
+      - --output
+      - "{output_json}"
+      - --checkpoint
+      - models/graspnet_realsense.tar
+
+    min_score: 0.10
+    max_candidates: 30
+    target_center_tolerance_m: 0.20
+    width_range_m: [0.0, 0.16]
+
+    # base_z is safest for the current upright-bottle tabletop workflow.
+    # grasp_z follows the returned GraspNet grasp frame and needs more collision checking.
+    pregrasp_axis: base_z
+    pre_grasp_offset_m: 0.12
+    retreat_offset_m: 0.16
+
+    # T_base_tcp = T_base_camera @ T_camera_grasp @ grasp_to_tcp_transform
+    # Adjust this if your GraspNet/AnyGrasp gripper frame does not match the UR TCP frame.
+    grasp_to_tcp_transform:
+      - [1.0, 0.0, 0.0, 0.0]
+      - [0.0, 1.0, 0.0, 0.0]
+      - [0.0, 0.0, 1.0, 0.0]
+      - [0.0, 0.0, 0.0, 1.0]
+

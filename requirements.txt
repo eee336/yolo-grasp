@@ -9,3 +9,5 @@ PyYAML>=6.0
 # pyserial>=3.5           # DexH13 serial adapter
 # pymodbus>=3.6           # DexH13 Modbus adapter
 # SpeechRecognition>=3.10 # Optional microphone ASR front-end
+# graspnetAPI @ git+https://github.com/graspnet/graspnetAPI.git
+#                         # Optional only for reading GraspNet .npy GraspGroup outputs

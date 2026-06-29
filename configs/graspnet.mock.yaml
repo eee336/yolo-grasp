@@ -1,0 +1,28 @@
+# Mock GraspNet backend for validating this project's integration layer.
+# It does not run a real network. Use configs/graspnet.example.yaml for real GraspNet/AnyGrasp inference.
+
+grasp:
+  mode: graspnet
+  graspnet:
+    backend: synthetic
+    fallback_to_top_down: false
+    min_score: 0.10
+    max_candidates: 5
+    target_center_tolerance_m: 0.25
+    width_range_m: [0.0, 0.16]
+    pre_grasp_offset_m: 0.06
+    retreat_offset_m: 0.08
+    pregrasp_axis: base_z
+    grasp_to_tcp_transform:
+      - [1.0, 0.0, 0.0, 0.0]
+      - [0.0, 1.0, 0.0, 0.0]
+      - [0.0, 0.0, 1.0, 0.0]
+      - [0.0, 0.0, 0.0, 1.0]
+    synthetic_score: 0.80
+    synthetic_width_m: 0.08
+    synthetic_depth_m: 0.04
+    synthetic_rotation_camera:
+      - [1.0, 0.0, 0.0]
+      - [0.0, 1.0, 0.0]
+      - [0.0, 0.0, 1.0]
+

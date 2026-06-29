@@ -156,6 +156,43 @@ grasp:
 
 `tcp_orientation_rvec` 是 UR 的旋转向量格式 `[rx, ry, rz]`。
 
+### GraspNet 模式
+
+可选配置：
+
+```yaml
+grasp:
+  mode: graspnet
+  graspnet:
+    backend: command
+    command:
+      - python
+      - external/graspnet_bridge/run_inference.py
+      - --input
+      - "{input_npz}"
+      - --output
+      - "{output_json}"
+    min_score: 0.10
+    target_center_tolerance_m: 0.20
+    width_range_m: [0.0, 0.16]
+    pregrasp_axis: base_z
+    grasp_to_tcp_transform:
+      - [1.0, 0.0, 0.0, 0.0]
+      - [0.0, 1.0, 0.0, 0.0]
+      - [0.0, 0.0, 1.0, 0.0]
+      - [0.0, 0.0, 0.0, 1.0]
+```
+
+支持的后端：
+
+```text
+synthetic  只用于本项目接口自检
+command    调用外部 GraspNet/AnyGrasp 推理脚本
+file       读取已有 JSON 或 .npy grasp 输出
+```
+
+详细协议见 [GRASPNET.md](GRASPNET.md)。
+
 ## safety
 
 ```yaml

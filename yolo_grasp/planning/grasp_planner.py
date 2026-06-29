@@ -4,6 +4,7 @@ from typing import Mapping, Optional, Sequence
 
 import numpy as np
 
+from yolo_grasp.planning.graspnet_adapter import GraspNetAdapter
 from yolo_grasp.types import GraspCandidate, ObjectPose, PipelineError
 
 
@@ -21,6 +22,7 @@ class GraspPlanner:
         )
         self.default_profile = str(config.get("default_hand_profile", "bottle_cylindrical"))
         self.per_class = config.get("per_class", {})
+        self.graspnet = GraspNetAdapter(config.get("graspnet", {}))
 
     def choose_target(
         self,
@@ -40,12 +42,39 @@ class GraspPlanner:
             candidates = rank_by_spatial_hint(candidates, spatial_hint)
         return candidates[0]
 
-    def plan(self, target: ObjectPose) -> GraspCandidate:
-        if self.mode != "top_down":
-            raise PipelineError(f"Unsupported grasp.mode={self.mode!r}; implemented mode is top_down")
+    def plan(self, target: ObjectPose, frame=None, camera_to_base: Optional[np.ndarray] = None) -> GraspCandidate:
+        if self.mode == "top_down":
+            return self._plan_top_down(target)
 
+        if self.mode in {"graspnet", "anygrasp"}:
+            if frame is None:
+                raise PipelineError("grasp.mode=graspnet requires the RGB-D frame")
+            if camera_to_base is None:
+                raise PipelineError("grasp.mode=graspnet requires camera_to_base transform")
+            try:
+                return self.graspnet.plan(
+                    frame=frame,
+                    target=target,
+                    camera_to_base=camera_to_base,
+                    hand_profile=self._hand_profile_for_target(target),
+                )
+            except PipelineError:
+                if bool(self.graspnet.config.get("fallback_to_top_down", True)):
+                    candidate = self._plan_top_down(target)
+                    candidate.description = "fallback after GraspNet failure: " + candidate.description
+                    candidate.metadata["graspnet_fallback"] = True
+                    return candidate
+                raise
+
+        raise PipelineError(f"Unsupported grasp.mode={self.mode!r}; supported modes are top_down and graspnet")
+
+    def _hand_profile_for_target(self, target: ObjectPose) -> str:
         class_cfg = self.per_class.get(target.class_name, {})
-        hand_profile = str(class_cfg.get("hand_profile", self.default_profile))
+        return str(class_cfg.get("hand_profile", self.default_profile))
+
+    def _plan_top_down(self, target: ObjectPose) -> GraspCandidate:
+        class_cfg = self.per_class.get(target.class_name, {})
+        hand_profile = self._hand_profile_for_target(target)
         xy_offset = np.asarray(class_cfg.get("xy_offset_m", [0.0, 0.0]), dtype=np.float64)
         grasp_height_above_table = float(class_cfg.get("grasp_height_above_table_m", 0.09))
         tcp_z_offset = float(class_cfg.get("tcp_z_offset_m", 0.0))

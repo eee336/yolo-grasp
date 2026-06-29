@@ -140,6 +140,36 @@ python scripts/validate_step09_full_grasp.py \
 
 第 8、9 步会移动真实硬件，所以必须显式传 `--confirm-motion`。
 
+## 4.2 可选 GraspNet 验证
+
+当前正立瓶子场景不需要 GraspNet；如果只是想确认 GraspNet 接口已经配置进工程，先跑 mock 后端：
+
+```bash
+python scripts/validate_graspnet_adapter.py \
+  -c configs/default.yaml \
+  -c configs/graspnet.mock.yaml \
+  --command "把矿泉水瓶抓起来"
+```
+
+真实外部 GraspNet/AnyGrasp 推理器配置见：
+
+```text
+configs/graspnet.example.yaml
+external/graspnet_bridge/run_inference.py
+docs/GRASPNET.md
+```
+
+启用真实 GraspNet 后端：
+
+```bash
+python scripts/validate_graspnet_adapter.py \
+  -c configs/default.yaml \
+  -c configs/hardware.local.yaml \
+  -c configs/graspnet.example.yaml \
+  --command "把矿泉水瓶抓起来" \
+  --require-real-backend
+```
+
 ## 5. 采集 RealSense 样本
 
 ```bash

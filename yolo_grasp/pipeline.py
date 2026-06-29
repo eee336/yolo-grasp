@@ -65,7 +65,7 @@ class GraspPipeline:
                 raise PipelineError("no localized objects")
 
             target = self.planner.choose_target(objects, target_class, spatial_hint)
-            candidate = self.planner.plan(target)
+            candidate = self.planner.plan(target, frame=frame, camera_to_base=self.localizer.camera_to_base)
             self.safety.validate_candidate(candidate)
             LOGGER.info("Planned grasp: %s", candidate.description)
 

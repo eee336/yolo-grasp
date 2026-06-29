@@ -11,13 +11,17 @@ yolo_grasp/
   camera/       RealSense、图片回放、mock 相机
   detection/    Ultralytics YOLO 与 mock detector
   perception/   深度反投影、目标 3D 定位
-  planning/     桌面瓶类抓取规划
+  planning/     桌面瓶类抓取规划、可选 GraspNet 适配
   robot/        UR5e RTDE 与 mock 机械臂
   hand/         DexH13 SDK/Modbus/串口 JSON/mock 适配
   pipeline.py   完整抓取状态机
 configs/
   default.yaml            默认 mock 配置
   hardware.example.yaml   真实硬件配置模板
+  graspnet.example.yaml   GraspNet/AnyGrasp 外部推理配置模板
+  graspnet.mock.yaml      GraspNet 接口自检配置
+external/
+  graspnet_bridge/        外部 GraspNet 推理桥接模板
 scripts/
   run_grasp.py            主入口
   validate_step*.py       1-9步分阶段验证脚本
@@ -46,6 +50,12 @@ pip install -e .
 
 ```bash
 pip install -e ".[vision,realsense,ur,dexh13]"
+```
+
+如需读取 GraspNet API 的 `.npy GraspGroup` 输出，可以额外安装：
+
+```bash
+pip install -e ".[graspnet]"
 ```
 
 如果 `pyrealsense2` 或 `ur-rtde` 在你的系统上安装失败，优先按对应硬件库的官方安装方式处理，然后再回到本项目运行。
@@ -132,6 +142,30 @@ detector:
 ```
 
 但化学试剂瓶最终最好使用你自己的数据集训练。
+
+## 可选：启用 GraspNet
+
+当前正立瓶子场景推荐继续用默认 `top_down`。如果要试 GraspNet/AnyGrasp，可以先跑接口自检：
+
+```bash
+python scripts/validate_graspnet_adapter.py \
+  -c configs/default.yaml \
+  -c configs/graspnet.mock.yaml \
+  --command "把矿泉水瓶抓起来"
+```
+
+真实 GraspNet 接入使用：
+
+```bash
+python scripts/validate_graspnet_adapter.py \
+  -c configs/default.yaml \
+  -c configs/hardware.local.yaml \
+  -c configs/graspnet.example.yaml \
+  --command "把矿泉水瓶抓起来" \
+  --require-real-backend
+```
+
+详细说明见 [docs/GRASPNET.md](docs/GRASPNET.md)。
 
 ## 真实硬件跑通步骤
 
