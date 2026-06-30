@@ -162,6 +162,8 @@ python scripts/run_web.py \
 
 页面可以查看相机画面、检测列表、选择目标类别、输入中文命令，并触发 `Plan` 或 `Execute`。详细说明见 [docs/WEB_UI.md](docs/WEB_UI.md)。
 
+另一台电脑从克隆项目到网页端生成抓取位姿的完整步骤见 [docs/WEB_DEPLOYMENT_STEPS.md](docs/WEB_DEPLOYMENT_STEPS.md)。
+
 ## 准备 YOLO 模型
 
 推荐训练实例分割模型，而不是只训练 bbox 检测模型。类别建议：
